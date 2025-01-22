@@ -2,11 +2,12 @@
 
 namespace App\Plugins;
 
-use App\Models\Plugin as PluginModel;
-use Illuminate\Support\Facades\Log;
-use App\Types\Plugin as PluginType;
+use App\Models\Plugin;
+use App\Types\PluginType;
 use App\Plugins\Google\GooglePlugin;
 use App\Plugins\Afas\AfasPlugin;
+
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 class PluginManager
@@ -50,7 +51,7 @@ class PluginManager
             throw new Exception("Plugin $name already registered");
         }
 
-        $model = PluginModel::where('name', $name)->first();
+        $model = Plugin::where('name', $name)->first();
 
         if ($model === null) {
             $pluginInstance->getModel()->save();

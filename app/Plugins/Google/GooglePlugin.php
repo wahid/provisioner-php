@@ -3,18 +3,20 @@
 namespace App\Plugins\Google;
 
 use App\Events\{MemberChanged, GroupChanged, UserChanged};
+use App\Plugins\IdentityPlugin;
 use App\Plugins\PluginBase;
-use App\Models\Plugin as PluginModel;
+use App\Models\Plugin;
+use App\Types\PluginType;
 use App\Types\ChangeEventType;
-use App\Types\Plugin as PluginType;
-use App\Plugins\Google\Config;
 
 
 class GooglePlugin implements PluginBase
 {
+    use IdentityPlugin;
+
     private const NAME = 'Google';
 
-    private PluginModel $model;
+    private Plugin $model;
 
     public function __construct()
     {
@@ -54,12 +56,12 @@ class GooglePlugin implements PluginBase
         }
     }
     
-    public function getModel(): PluginModel
+    public function getModel(): Plugin
     {
         return $this->model;
     }
 
-    public function setModel(PluginModel $model): void
+    public function setModel(Plugin $model): void
     {
         $this->model = $model;
     }
@@ -79,9 +81,9 @@ class GooglePlugin implements PluginBase
         $this->model->save();
     }
 
-    public static function defaultModel(): PluginModel
+    public static function defaultModel(): Plugin
     {
-        return new PluginModel([
+        return new Plugin([
             'name' => self::NAME,
             'description' => 'Google plugin',
             'is_auto_activated' => true,
@@ -94,5 +96,17 @@ class GooglePlugin implements PluginBase
     public static function getName(): string
     {
         return self::NAME;
+    }
+
+    public function getEmailBuilder(): object {
+        throw new \Exception('Not implemented');
+    }
+
+    public function getConfig(): array {
+        return $this->model->config ?? [];
+    }
+
+    public function getDomains(): array {
+        return $this->model->config['domains'];
     }
 }

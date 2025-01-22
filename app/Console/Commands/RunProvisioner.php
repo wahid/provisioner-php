@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
+use App\Plugins\DataPlugin;
+use App\Plugins\PluginManager;
+use App\Types\PluginType;
 use Illuminate\Console\Command;
 
 class RunProvisioner extends Command
@@ -19,13 +21,32 @@ class RunProvisioner extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Run the provisioner to provision the data';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
+        $manager = PluginManager::getInstance();
 
+        $dataProviders = collect($manager->getEnabledPluginsByType(PluginType::Data));
+
+        if($dataProviders->count() === 0) {
+            $this->error('No data providers found');
+            return;
+        }
+
+        $identityProviders = collect($manager->getEnabledPluginsByType(PluginType::Identity));
+
+        if($identityProviders->count() === 0) {
+            $this->error('No identity providers found');
+            return;
+        }
+
+        /** @var DataPlugin $dataProvider */
+        $dataProvider = $dataProviders->first();
+
+        $dataProvider->employees();
     }
 }

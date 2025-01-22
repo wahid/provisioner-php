@@ -3,16 +3,19 @@
 namespace App\Plugins\Afas;
 
 use App\Events\{GroupChanged, MemberChanged, UserChanged};
+use App\Plugins\DataPlugin;
 use App\Plugins\PluginBase;
-use App\Models\Plugin as PluginModel;
+use App\Models\Plugin;
 use App\Types\ChangeEventType;
-use App\Types\Plugin as PluginType;
+use App\Types\PluginType;
 
 class AfasPlugin implements PluginBase
 {
+    use DataPlugin;
+
     private const NAME = 'Afas';
 
-    private PluginModel $model;
+    private Plugin $model;
 
     public function __construct()
     {
@@ -31,12 +34,12 @@ class AfasPlugin implements PluginBase
 
     }
 
-    public function getModel(): PluginModel
+    public function getModel(): Plugin
     {
         return $this->model;
     }
 
-    public function setModel(PluginModel $model): void
+    public function setModel(Plugin $model): void
     {
         $this->model = $model;
     }
@@ -56,9 +59,9 @@ class AfasPlugin implements PluginBase
         $this->model->save();
     }
 
-    public static function defaultModel(): PluginModel
+    public static function defaultModel(): Plugin
     {
-        return new PluginModel([
+        return new Plugin([
             'name' => self::NAME,
             'description' => 'Afas plugin',
             'is_auto_activated' => true,
@@ -71,5 +74,10 @@ class AfasPlugin implements PluginBase
     public static function getName(): string
     {
         return self::NAME;
+    }
+
+    public function getEmployees(): array
+    {
+        return [];
     }
 }

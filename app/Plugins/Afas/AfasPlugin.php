@@ -2,8 +2,10 @@
 
 namespace App\Plugins\Afas;
 
+use App\Events\{GroupChanged, MemberChanged, UserChanged};
 use App\Plugins\PluginBase;
 use App\Models\Plugin as PluginModel;
+use App\Types\ChangeEventType;
 use App\Types\Plugin as PluginType;
 
 class AfasPlugin implements PluginBase
@@ -17,9 +19,16 @@ class AfasPlugin implements PluginBase
         $this->model = self::defaultModel();
     }
 
-    public function getEventsMapping(): array
-    {
-        return [];
+    public function handleGroupChangeEvent(GroupChanged $event): void {
+
+    }
+
+    public function handleUserEvent(UserChanged $event): void {
+
+    }
+
+    public function handleMemberEvent(MemberChanged $event): void {
+
     }
 
     public function getModel(): PluginModel

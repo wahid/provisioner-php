@@ -2,8 +2,10 @@
 
 namespace App\Plugins\Google;
 
+use App\Events\{MemberChanged, GroupChanged, UserChanged};
 use App\Plugins\PluginBase;
 use App\Models\Plugin as PluginModel;
+use App\Types\ChangeEventType;
 use App\Types\Plugin as PluginType;
 use App\Plugins\Google\Config;
 
@@ -19,11 +21,39 @@ class GooglePlugin implements PluginBase
         $this->model = self::defaultModel();
     }
 
-    public function getEventsMapping(): array
-    {
-        return [];
+    public function handleGroupChangeEvent(GroupChanged $event): void {
+        switch($event->type) {
+            case ChangeEventType::CREATED:
+                break;
+            case ChangeEventType::UPDATED:
+                break;
+            case ChangeEventType::REMOVED:
+                break;
+        }
     }
 
+    public function handleUserEvent(UserChanged $event): void {
+        switch($event->type) {
+            case ChangeEventType::CREATED:
+                break;
+            case ChangeEventType::UPDATED:
+                break;
+            case ChangeEventType::REMOVED:
+                break;
+        }
+    }
+    
+    public function handleMemberEvent(MemberChanged $event): void {
+      switch($event->type) {
+            case ChangeEventType::CREATED:
+                break;
+            case ChangeEventType::UPDATED:
+                break;
+            case ChangeEventType::REMOVED:
+                break;
+        }
+    }
+    
     public function getModel(): PluginModel
     {
         return $this->model;

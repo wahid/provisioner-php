@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\ProvisionedUserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Log;
+
+
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -22,6 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/provisioned-users', action: [ProvisionedUserController::class, 'index'])->name('provisioned-users.index');
 });
 
 require __DIR__ . '/auth.php';

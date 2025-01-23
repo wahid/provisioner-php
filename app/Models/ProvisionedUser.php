@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class ProvisionedUser extends Model
 {
     use HasFactory;
+
+    protected $visible = ['id', 'first_name', 'middle_name', 'last_name', 'email'];
 }

@@ -5,7 +5,7 @@ namespace App\Plugins\Afas;
 class AfasConfig
 {
     /* Connection details */
-    public string $urlEndpoint = '';
+    public string $urlEndpoint = 'https://id.rest.afas.online/ProfitRestServices/connectors/';
     public string $organizationID = '';
     public string $base64Token = '';
     public string $integrationID = '';

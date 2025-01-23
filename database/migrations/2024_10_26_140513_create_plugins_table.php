@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Types\Plugin;
+use App\Types\PluginType;
 return new class extends Migration {
     /**
      * Run the migrations.
@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->boolean('is_enabled')->default(false);
             $table->string('external_system_name')->nullable();
             $table->boolean('supports_authorization_profiles')->default(false);
-            $table->enum('type', array_column(Plugin::cases(), 'value'))->default(Plugin::Generic->value);
+            $table->enum('type', array_column(PluginType::cases(), 'value'))->default(PluginType::Generic->value);
             $table->json('config')->nullable();
             $table->timestamps();
         });

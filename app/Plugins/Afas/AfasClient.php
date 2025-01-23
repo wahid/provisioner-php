@@ -18,7 +18,7 @@ class RequestException extends \Exception
 
 class AfasClient
 {
-    private const DEFAULT_FILTER = "?skip=0&take=100000";
+    public const DEFAULT_FILTER = "?skip=0&take=100000";
 
     /**
      * Headers for the HTTP requests.
@@ -48,7 +48,7 @@ class AfasClient
         }
     }
 
-    private function createRequestException(Response $response): RequestException
+    public function createRequestException(Response $response): RequestException
     {
         $data = $response->json();
 
@@ -66,7 +66,11 @@ class AfasClient
         $response = Http::withHeaders($this->headers)->{$method}($url, $data);
 
         if ($response->successful()) {
-            return $response->json();
+            $data =  $response->json();
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($data)) {
+                return $data;
+            }
         }
 
         throw $this->createRequestException($response);
@@ -80,5 +84,10 @@ class AfasClient
     public function put(string $endpoint, array $data): ?array
     {
         return $this->sendRequest('put', $endpoint, $data);
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->headers;
     }
 }

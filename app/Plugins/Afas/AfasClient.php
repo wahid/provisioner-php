@@ -18,7 +18,7 @@ class RequestException extends \Exception
 
 class AfasClient
 {
-    public const DEFAULT_FILTER = "?skip=0&take=100000";
+    private const DEFAULT_FILTER = "?skip=0&take=100000";
 
     /**
      * Headers for the HTTP requests.
@@ -48,7 +48,7 @@ class AfasClient
         }
     }
 
-    public function createRequestException(Response $response): RequestException
+    private function createRequestException(Response $response): RequestException
     {
         $data = $response->json();
 

@@ -84,15 +84,16 @@ class AfasUserConverterTest extends Tests\TestCase
 
         // Check if the membership is correctly imported
         $this->assertCount(1, $provisionedUser->memberships);
+        $membership = $provisionedUser->memberships->first();
         $this->assertEquals(
             $this->converter->parseAfasDatetime($contract['start_date']),
-            $provisionedUser->memberships->first()->start_date
+            $membership->start_date
         );
         $this->assertEquals(
             $this->converter->parseAfasDatetime($contract['end_date'], true),
-            $provisionedUser->memberships->first()->end_date
+            $membership->end_date
         );
-        $this->assertEquals($contract['employment_number'], $provisionedUser->memberships->first()->employment_number);
+        $this->assertEquals($contract['employment_number'], $membership->employment_number);
 
         // Check if the group is correctly imported
         $group = $provisionedUser->memberships->first()->group;
@@ -100,5 +101,69 @@ class AfasUserConverterTest extends Tests\TestCase
         $this->assertEquals($contract['code'], $group->group_code);
         $this->assertEquals($contract['description'], $group->name);
         $this->assertEquals($this->config->createMailboxForGroups, $group->should_have_mailbox);
+    }
+
+    public function testImportUserAndContractsWithInvalidContract()
+    {
+        $user = $this->getUser();
+
+        $contract = $this->getContract();
+        $contract['end_date'] = $this->faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d');
+
+        $provisionedUser = $this->converter->importUserAndContracts($user, [$contract]);
+
+        $this->assertNotNull($provisionedUser);
+        $this->assertCount(0, $provisionedUser->memberships);
+    }
+
+    public function testImportUserAndContractsWithInvalidUser()
+    {
+        $user = $this->getUser();
+        $user['employment_end_date'] = $this->faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d');
+
+        $contract = $this->getContract();
+
+        $provisionedUser = $this->converter->importUserAndContracts($user, [$contract]);
+
+        $this->assertNull($provisionedUser);
+    }
+
+    public function testImportUserAndContractsWithNullEndDate()
+    {
+        $user = $this->getUser();
+        $user['employment_end_date'] = null;
+
+        $contract = $this->getContract();
+        $contract['end_date'] = null;
+
+        $provisionedUser = $this->converter->importUserAndContracts($user, [$contract]);
+
+        $this->assertNotNull($provisionedUser);
+        $this->assertCount(1, $provisionedUser->memberships);
+    }
+
+    public function testImportUserAndContractsWithNullStartDateUser()
+    {
+        $user = $this->getUser();
+        $user['employment_start_date'] = null;
+
+        $contract = $this->getContract();
+
+        $provisionedUser = $this->converter->importUserAndContracts($user, [$contract]);
+
+        $this->assertNull($provisionedUser);
+    }
+
+    public function testImportUserAndContractsWithNullStartDateContract()
+    {
+        $user = $this->getUser();
+
+        $contract = $this->getContract();
+        $contract['start_date'] = null;
+
+        $provisionedUser = $this->converter->importUserAndContracts($user, [$contract]);
+
+        $this->assertNotNull($provisionedUser);
+        $this->assertCount(0, $provisionedUser->memberships);
     }
 }

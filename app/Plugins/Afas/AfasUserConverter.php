@@ -85,6 +85,15 @@ class AfasUserConverter
                 $provisionedUser->$key = $value;
             });
 
+            if (!$provisionedUser->employment_start_date) {
+                return null;
+            }
+
+            // Check if employment end date is in the past
+            if ($provisionedUser->employment_end_date && $provisionedUser->employment_end_date->isPast()) {
+                return null;
+            }
+
             $provisionedUser->save();
 
             return $provisionedUser;
@@ -127,15 +136,22 @@ class AfasUserConverter
      */
     private function shouldKeepContract(array $contract): bool
     {
+        if ($contract['start_date'] === null) {
+            return false;
+        }
+
         if (in_array($contract['code'], $this->config->contractCodesToSkip)) {
             return false;
         }
+
         if (in_array($contract['function_code'], $this->config->functionCodesToSkip)) {
             return false;
         }
+
         if (!empty($contract['end_date']) && $contract['end_date']->lt(Carbon::now()->subDays($this->config->keepContractAfterExpirationDays))) {
             return false;
         }
+
         return true;
     }
 

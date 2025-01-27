@@ -4,6 +4,7 @@ namespace App\Plugins\Google;
 
 use App\Events\{MemberChanged, GroupChanged, UserChanged};
 use App\Plugins\IdentityPlugin;
+use App\Plugins\IdentityTask;
 use App\Plugins\PluginBase;
 use App\Models\Plugin;
 use App\Types\PluginType;
@@ -12,7 +13,7 @@ use App\Types\ChangeEventType;
 
 class GooglePlugin implements PluginBase
 {
-    use IdentityPlugin;
+    use IdentityPlugin, IdentityTask;
 
     private const NAME = 'Google';
 
@@ -108,5 +109,17 @@ class GooglePlugin implements PluginBase
 
     public function getDomains(): array {
         return $this->model->config['domains'];
+    }
+
+    public function create(): void {
+    }
+
+    public function update(): void {
+    }
+
+    public function delete(): void {
+    }
+
+    public function sync(): void {
     }
 }

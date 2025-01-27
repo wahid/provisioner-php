@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Plugins\DataPlugin;
 use App\Plugins\PluginManager;
 use App\Types\PluginType;
 use Illuminate\Console\Command;
@@ -23,6 +22,13 @@ class RunProvisioner extends Command
      */
     protected $description = 'Run the provisioner to provision the data';
 
+    protected array $actions = [
+        'create',
+        'update',
+        'delete',
+        'sync',
+    ];
+
     /**
      * Execute the console command.
      */
@@ -42,9 +48,23 @@ class RunProvisioner extends Command
             return;
         }
 
-        /** @var DataPlugin $dataProvider */
+        /** @var \App\Plugins\DataPlugin $dataProvider */
         $dataProvider = $dataProviders->first();
+        $dataProvider->getUsers();
 
-        $dataProvider->employees();
+        /** @var \App\Plugins\IdentityPlugin $identityProvider */
+        $identityProvider = $identityProviders->first();
+
+        foreach($this->actions as $action) {
+            $this->info("Running {$action} action");
+            
+            try {
+                $identityProvider->{$action}();
+
+                $this->info("{$action} action ran successfully");
+            } catch(\Exception $e) {
+                $this->error("Failed to run {$action} action: {$e->getMessage()}");
+            }
+        }
     }
 }

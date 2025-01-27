@@ -75,7 +75,7 @@ class AfasPlugin implements PluginBase
         return self::NAME;
     }
 
-    public function getEmployees(): array
+    public function getUsers(): array
     {
         return [];
     }

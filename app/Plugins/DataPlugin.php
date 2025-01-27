@@ -8,9 +8,5 @@ trait DataPlugin {
     /**
      * @return array<ProvisionedUser>
      */
-    public function employees(): array {
-        return $this->getEmployees();
-    }
-
-    abstract public function getEmployees(): array;
+    abstract public function getUsers(): array;
 }

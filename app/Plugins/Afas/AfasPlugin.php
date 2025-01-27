@@ -65,7 +65,7 @@ class AfasPlugin implements PluginBase
             'description' => 'Afas plugin',
             'is_auto_activated' => true,
             'is_enabled' => true,
-            'type' => PluginType::Identity,
+            'type' => PluginType::Data,
             'config' => (array) new AfasConfig(),
         ]);
     }

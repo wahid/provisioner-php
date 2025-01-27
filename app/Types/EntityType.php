@@ -2,7 +2,7 @@
 
 namespace App\Types;
 
-enum Entity: string
+enum EntityType: string
 {
     case Default = 'default';
     case Manual = 'manual';

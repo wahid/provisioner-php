@@ -2,7 +2,7 @@
 
 namespace App\Types;
 
-enum UserActivation: string
+enum UserActivationType: string
 {
     case Default = 'default';
     case ForcedEnabled = 'forced_enabled';

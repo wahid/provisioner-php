@@ -2,7 +2,7 @@
 
 namespace App\Types;
 
-enum Access: string
+enum AccessType: string
 {
     case Default = 'default';
     case Manual = 'manual';

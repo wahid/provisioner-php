@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\ProvisionedUser;
+use App\Types\UserActivationType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -45,7 +46,7 @@ class ProvisionedUserFactory extends Factory
             'is_blocked' => $this->faker->boolean,
             'is_custom' => $this->faker->boolean,
             'should_include_in_global_address_list' => $this->faker->boolean,
-            'account_activation_policy' => $this->faker->randomElement(['AUTOMATIC', 'ALWAYS', 'NEVER']),
+            'account_activation_policy' => $this->faker->randomElement(array_column(UserActivationType::cases(), 'value')),
             'should_ignore_contracts' => $this->faker->boolean,
             'should_sync_back_to_data_provider' => $this->faker->boolean,
             'members_updated_at' => $this->faker->optional()->dateTime,

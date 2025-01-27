@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Types\Entity;
+use App\Types\EntityType;
 
 return new class extends Migration {
     /**
@@ -42,8 +42,8 @@ return new class extends Migration {
 
             $table->enum('status', ['active', 'inactive'])->default('inactive');
 
-            $table->enum('entity_type', array_column(Entity::cases(), 'value'))
-                ->default(Entity::Default ->value);
+            $table->enum('entity_type', array_column(EntityType::cases(), 'value'))
+                ->default(EntityType::Default ->value);
 
             $table->timestamps();
         });

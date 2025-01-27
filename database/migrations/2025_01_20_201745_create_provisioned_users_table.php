@@ -1,5 +1,6 @@
 <?php
 
+use App\Types\UserActivationType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -37,7 +38,8 @@ return new class extends Migration {
             $table->boolean('is_blocked')->default(false);
             $table->boolean('is_custom')->default(false);
             $table->boolean('should_include_in_global_address_list')->default(true);
-            $table->string('account_activation_policy')->default('AUTOMATIC');
+            $table->enum('account_activation_policy', array_column(UserActivationType::cases(), 'value'))
+                ->default(UserActivationType::Default ->value);
             $table->boolean('should_ignore_contracts')->default(false);
             $table->boolean('should_sync_back_to_data_provider')->default(true);
             $table->timestamps();

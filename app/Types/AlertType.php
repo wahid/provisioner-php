@@ -2,7 +2,7 @@
 
 namespace App\Types;
 
-enum Alert: string
+enum AlertType: string
 {
     case Created = 'created';
     case CreationFailed = 'creation_failed';

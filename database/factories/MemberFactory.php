@@ -7,7 +7,7 @@ use App\Models\ProvisionedUser;
 use App\Models\Group;
 use App\Models\MemberFunction;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Types\Entity;
+use App\Types\EntityType;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Member>
@@ -25,7 +25,7 @@ class MemberFactory extends Factory
     {
         return [
             'provisioned_user_id' => ProvisionedUser::factory(),
-            'group_id' => Group::factory(),
+            'group_id' => Group::factory()->withMailbox(),
             'member_function_id' => MemberFunction::factory(),
             'employment_number' => $this->faker->unique()->numerify('EMP-#####'),
             'role' => $this->faker->jobTitle,
@@ -35,7 +35,7 @@ class MemberFactory extends Factory
             'should_be_synced' => $this->faker->boolean,
             'should_calendar_be_enabled' => $this->faker->boolean,
             'status' => $this->faker->randomElement(['active', 'inactive']),
-            'entity_type' => $this->faker->randomElement(array_column(Entity::cases(), 'value')),
+            'entity_type' => $this->faker->randomElement(array_column(EntityType::cases(), 'value')),
         ];
     }
 }

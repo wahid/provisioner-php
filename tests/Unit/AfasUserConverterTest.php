@@ -166,4 +166,17 @@ class AfasUserConverterTest extends Tests\TestCase
         $this->assertNotNull($provisionedUser);
         $this->assertCount(0, $provisionedUser->memberships);
     }
+
+    public function testImportUserAndContractsShouldIgnoreContracts()
+    {
+        $user = $this->getUser();
+        $user['should_ignore_contracts'] = true;
+
+        $contract = $this->getContract();
+
+        $provisionedUser = $this->converter->importUserAndContracts($user, [$contract]);
+
+        $this->assertNotNull($provisionedUser);
+        $this->assertCount(0, $provisionedUser->memberships);
+    }
 }

@@ -73,36 +73,28 @@ class AfasUserConverter
      */
     public function getOrCreateUser(array $user): ?ProvisionedUser
     {
-        try {
-            $provisionedUser = ProvisionedUser::firstOrNew([
-                'user_id' => $user['user_id'],
-            ]);
 
-            array_walk($user, function (&$value, $key) use ($provisionedUser) {
-                if (($key === 'employment_start_date' || $key === 'employment_end_date') && $value) {
-                    $value = $this->parseAfasDatetime($value, $key === 'employment_end_date');
-                }
-                $provisionedUser->$key = $value;
-            });
+        $provisionedUser = ProvisionedUser::firstOrNew([
+            'user_id' => $user['user_id'],
+        ]);
 
-            if (!$provisionedUser->employment_start_date) {
-                return null;
+        array_walk($user, function (&$value, $key) use ($provisionedUser) {
+            if (($key === 'employment_start_date' || $key === 'employment_end_date') && $value) {
+                $value = $this->parseAfasDatetime($value, $key === 'employment_end_date');
             }
+            $provisionedUser->$key = $value;
+        });
 
-            // Check if employment end date is in the past
-            if ($provisionedUser->employment_end_date && $provisionedUser->employment_end_date->isPast()) {
-                return null;
-            }
-
-            $provisionedUser->save();
-
-            return $provisionedUser;
-        } catch (Exception $e) {
-            dd($e);
-            Log::error('Error creating or updating provisioned user', ['user' => $user, 'error' => $e->getMessage()]);
+        if (!$provisionedUser->employment_start_date) {
+            return null;
         }
 
-        return null;
+        // Check if employment end date is in the past
+        if ($provisionedUser->employment_end_date && $provisionedUser->employment_end_date->isPast()) {
+            return null;
+        }
+
+        return $provisionedUser->save() ? $provisionedUser : null;
     }
 
     /**

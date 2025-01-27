@@ -5,7 +5,6 @@ namespace App\Plugins\Afas;
 use App\Events\{GroupChanged, MemberChanged, UserChanged};
 use App\Plugins\{PluginBase, DataPlugin};
 use App\Models\Plugin;
-use App\Types\ChangeEventType;
 use App\Types\PluginType;
 
 class AfasPlugin implements PluginBase
@@ -78,5 +77,14 @@ class AfasPlugin implements PluginBase
     public function getUsers(): array
     {
         return [];
+    }
+
+    public function getConfig(): ?AfasConfig
+    {
+        if(!isset($this->model->config)) {
+            return null;
+        }
+        
+        return cast_array_to_class($this->model->config, AfasConfig::class);
     }
 }

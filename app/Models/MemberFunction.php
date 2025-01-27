@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class MemberFunction extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'code',
+        'title',
+    ];
 }

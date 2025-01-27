@@ -16,7 +16,7 @@ class AfasConfig
         "mappings" => [
             "OE" => "description",
             "OEcode" => "code",
-            "Functie2" => "fuction_title",
+            "Functie2" => "function_title",
             "Functiecode" => "function_code",
             "Einddatum_functie" => "end_date",
             "Begindatum_functie" => "start_date",

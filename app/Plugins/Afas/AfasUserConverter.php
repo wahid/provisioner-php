@@ -54,7 +54,6 @@ class AfasUserConverter
      */
     public function importUserAndContracts(array $user, array $contracts): ?ProvisionedUser
     {
-
         $provisionedUser = $this->getOrCreateUser($user);
 
         if ($provisionedUser && !$provisionedUser->should_ignore_contracts) {
@@ -80,7 +79,7 @@ class AfasUserConverter
             ]);
 
             array_walk($user, function (&$value, $key) use ($provisionedUser) {
-                if ($key === 'employment_start_date' || $key === 'employment_end_date') {
+                if (($key === 'employment_start_date' || $key === 'employment_end_date') && $value) {
                     $value = $this->parseAfasDatetime($value, $key === 'employment_end_date');
                 }
                 $provisionedUser->$key = $value;
@@ -90,6 +89,7 @@ class AfasUserConverter
 
             return $provisionedUser;
         } catch (Exception $e) {
+            dd($e);
             Log::error('Error creating or updating provisioned user', ['user' => $user, 'error' => $e->getMessage()]);
         }
 
@@ -105,21 +105,17 @@ class AfasUserConverter
      */
     private function processContract(ProvisionedUser $provisionedUser, array $contract): void
     {
-        try {
-            if (!empty($contract['start_date'])) {
-                $contract['start_date'] = $this->parseAfasDatetime($contract['start_date']);
-            }
+        if (!empty($contract['start_date'])) {
+            $contract['start_date'] = $this->parseAfasDatetime($contract['start_date']);
+        }
 
-            if (!empty($contract['end_date'])) {
-                $contract['end_date'] = $this->parseAfasDatetime($contract['end_date'], true);
-            }
+        if (!empty($contract['end_date'])) {
+            $contract['end_date'] = $this->parseAfasDatetime($contract['end_date'], true);
+        }
 
-            if ($this->shouldKeepContract($contract)) {
-                $group = $this->getOrCreateGroup($contract);
-                $this->createOrUpdateMembership($provisionedUser, $group, $contract);
-            }
-        } catch (Exception $e) {
-            Log::error('Error processing contract', ['contract' => $contract, 'error' => $e->getMessage()]);
+        if ($this->shouldKeepContract($contract)) {
+            $group = $this->getOrCreateGroup($contract);
+            $this->createOrUpdateMembership($provisionedUser, $group, $contract);
         }
     }
 
@@ -151,25 +147,20 @@ class AfasUserConverter
      */
     private function getOrCreateGroup(array $contract): Group
     {
-        try {
-            $group = Group::firstOrCreate(
-                ['group_code' => $contract['code']],
-                [
-                    'name' => $contract['description'],
-                    'description' => $contract['description'],
-                    'should_have_mailbox' => $this->config->createMailboxForGroups,
-                ]
-            );
+        $group = Group::firstOrCreate(
+            ['group_code' => $contract['code']],
+            [
+                'name' => $contract['description'],
+                'description' => $contract['description'],
+                'should_have_mailbox' => $this->config->createMailboxForGroups,
+            ]
+        );
 
-            if ($group->wasRecentlyCreated) {
-                Log::info('Group created', ['group_code' => $group->group_code, 'name' => $group->name]);
-            }
-
-            return $group;
-        } catch (Exception $e) {
-            Log::error('Error creating group', ['contract' => $contract, 'error' => $e->getMessage()]);
-            throw $e;
+        if ($group->wasRecentlyCreated) {
+            Log::info('Group created', ['group_code' => $group->group_code, 'name' => $group->name]);
         }
+
+        return $group;
     }
 
     /**
@@ -182,52 +173,42 @@ class AfasUserConverter
      */
     private function createOrUpdateMembership(ProvisionedUser $provisionedUser, Group $group, array $contract): void
     {
-        try {
-            $memberFunction = MemberFunction::firstOrCreate(
-                ['code' => $contract['function_code']],
-                ['title' => $contract['function_title']]
-            );
+        $memberFunction = MemberFunction::firstOrCreate(
+            ['code' => $contract['function_code']],
+            ['title' => $contract['function_title']]
+        );
 
-            $member = Member::firstOrCreate(
-                [
-                    'provisioned_user_id' => $provisionedUser->id,
-                    'group_id' => $group->id,
-                    'member_function_id' => $memberFunction->id,
-                ],
-                [
-                    'start_date' => $contract['start_date'],
-                    'end_date' => $contract['end_date'],
-                    'employment_number' => $contract['employment_number'],
-                ]
-            );
+        $member = Member::firstOrCreate(
+            [
+                'provisioned_user_id' => $provisionedUser->id,
+                'group_id' => $group->id,
+                'member_function_id' => $memberFunction->id,
+            ],
+            [
+                'start_date' => $contract['start_date'],
+                'end_date' => $contract['end_date'],
+                'employment_number' => $contract['employment_number'],
+            ]
+        );
 
-            if ($member->wasRecentlyCreated) {
-                Log::info('Member created', [
-                    'user_id' => $provisionedUser->user_id,
-                    'group_code' => $group->group_code,
-                    'function_code' => $memberFunction->code
-                ]);
-            } else {
-                // Update dates if they have changed
-                if ($member->start_date->ne($contract['start_date']) || $member->end_date->ne($contract['end_date'])) {
-                    $member->start_date = $contract['start_date'];
-                    $member->end_date = $contract['end_date'];
-                    $member->save();
-
-                    Log::info('Member updated', [
-                        'user_id' => $provisionedUser->user_id,
-                        'group_code' => $group->group_code,
-                        'function_code' => $memberFunction->code
-                    ]);
-                }
-            }
-        } catch (Exception $e) {
-            Log::error('Error creating or updating membership', [
+        if ($member->wasRecentlyCreated) {
+            Log::info('Member created', [
                 'user_id' => $provisionedUser->user_id,
                 'group_code' => $group->group_code,
-                'function_code' => $contract['function_code'],
-                'error' => $e->getMessage()
+                'function_code' => $memberFunction->code
+            ]);
+        } else if ($member->start_date->ne($contract['start_date']) || $member->end_date->ne($contract['end_date'])) {
+            $member->update([
+                'start_date' => $contract['start_date'],
+                'end_date' => $contract['end_date'],
+            ]);
+
+            Log::info('Member updated', [
+                'user_id' => $provisionedUser->user_id,
+                'group_code' => $group->group_code,
+                'function_code' => $memberFunction->code
             ]);
         }
+
     }
 }

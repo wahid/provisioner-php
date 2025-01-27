@@ -21,6 +21,15 @@ class Member extends Model
      */
     protected $dates = ['start_date', 'end_date'];
 
+    protected $fillable = [
+        'group_id',
+        'provisioned_user_id',
+        'member_function_id',
+        'start_date',
+        'end_date',
+        'employment_number',
+    ];
+
     /**
      * Determine if the member should be deleted.
      *
@@ -50,5 +59,17 @@ class Member extends Model
     function isWaitingForStart(): bool
     {
         return $this->start_date && $this->start_date->isFuture();
+    }
+
+    public function group() {
+        return $this->belongsTo(Group::class);
+    }
+
+    public function user() {
+        return $this->belongsTo(ProvisionedUser::class);
+    }
+
+    public function memberFunction() {
+        return $this->belongsTo(MemberFunction::class);
     }
 }

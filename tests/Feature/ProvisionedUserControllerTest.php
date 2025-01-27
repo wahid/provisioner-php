@@ -41,8 +41,8 @@ class ProvisionedUserControllerTest extends TestCase
 
         $response = $this->json('GET', '/provisioned-users');
 
-        $response->assertStatus(404);
-        $response->assertJson(['message' => 'No provisioned users found']);
+        $response->assertStatus(200);
+        $response->assertJson(["data" => []]);
     }
 
     public function test_index_no_auth()

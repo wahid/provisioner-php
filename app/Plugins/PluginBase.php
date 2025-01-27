@@ -3,39 +3,8 @@
 namespace App\Plugins;
 
 use App\Events\{GroupChanged, MemberChanged, UserChanged};
-use App\Models\{Plugin, ProvisionedUser};
+use App\Models\Plugin;
 use App\Types\PluginType;
-
-
-trait IdentityPlugin {
-    abstract public function getEmailBuilder(): object;
-    abstract public function getConfig(): array;
-    abstract public function getDomains(): array;
-
-    public function emailBuilder(): object {
-        return $this->getEmailBuilder();
-    }
-
-    public function config(): array {
-        return $this->getConfig();
-    }
-
-    public function domains(): array {
-        return $this->getDomains();
-    }
-}
-
-trait DataPlugin {
-
-    /**
-     * @return array<ProvisionedUser>
-     */
-    public function employees(): array {
-        return $this->getEmployees();
-    }
-
-    abstract public function getEmployees(): array;
-}
 
 interface PluginBase
 {

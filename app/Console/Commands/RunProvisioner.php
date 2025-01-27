@@ -26,10 +26,8 @@ class RunProvisioner extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(PluginManager $manager): void
     {
-        $manager = PluginManager::getInstance();
-
         $dataProviders = collect($manager->getEnabledPluginsByType(PluginType::Data));
 
         if($dataProviders->count() === 0) {

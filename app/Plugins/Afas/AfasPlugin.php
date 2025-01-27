@@ -3,8 +3,7 @@
 namespace App\Plugins\Afas;
 
 use App\Events\{GroupChanged, MemberChanged, UserChanged};
-use App\Plugins\DataPlugin;
-use App\Plugins\PluginBase;
+use App\Plugins\{PluginBase, DataPlugin};
 use App\Models\Plugin;
 use App\Types\ChangeEventType;
 use App\Types\PluginType;

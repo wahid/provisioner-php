@@ -15,23 +15,13 @@ class PluginManager
     /** @var array<PluginBase> */
     private array $plugins = [];
 
-    /** @var PluginManager|null */
-    private static ?PluginManager $instance = null;
-
-    /**
-     * Get the singleton instance of the Manager.
-     *
-     * @return PluginManager
-     */
-    public static function getInstance(): PluginManager
+    public function __construct()
     {
-        if (self::$instance === null) {
-            self::$instance = new PluginManager();
-            self::$instance->register(GooglePlugin::class);
-            self::$instance->register(AfasPlugin::class);
-        }
+        $availablePlugins = config('plugins.available', []);
 
-        return self::$instance;
+        foreach ($availablePlugins as $plugin) {
+            $this->register($plugin);
+        }
     }
 
     /**
